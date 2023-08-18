@@ -8,6 +8,8 @@ We are creating a wordle solver program based on Reinforcement learning.  There 
 1.  Non reinforcement learning base line example: In this example we are assuming that the state is the dictionary of possible words.  The action is the choice of next word.  The reward is the number of greens.  The expected number of greens for each potential word (Q Table) is caluculable from the dictionary. This represents a state explosion, but this analytical approach makes it possible, exactly.  This step has been completed and represents the baseline.
 2.  Bellman equation (Reinforcement Learning) based example: In this version, we are using the # of the guess as the state.  The action is the choice of the next word.  The reward is the number of words eliminated by that guess.  This will be learned via te Bellman Equation.  The policy will be to use the word at a particular stage that has the highest expected number of eliminated words.  We will also eliminate words that are not consistent with the feedback of the previous stage.
 
+![Project Screenshot](project_screenshot.png)
+
 At this time we have the basic modules working:
 1. wordle_feedback(target_word, guess_word): This module takes a five letter guess_word and compares it with the 5 letter target_word.
 2. is_consistent(word, feedback): This module compares a word with the feedback (from above) and returns a TRUE if the word is consistent with the feedback or FALSE othersise.  FALSE implies that the word cannot be a possible solution to the wordle game.
