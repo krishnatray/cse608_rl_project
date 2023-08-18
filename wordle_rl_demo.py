@@ -39,11 +39,10 @@ st.markdown("""
 with st.sidebar:
     
     credits_text = """
-
 ## CSE608 AI wih Reinforcement Learning July 2023
-- Project: Wordle Reinforcement Learning
+- Project: Wordle Reinforcement Learning 
+https://github.com/krishnatray/cse608_rl_project
 ---------------------
-
 ## Project Team:
 - Alok Gupta https://linkedin.com/in/alok-gupta-innovator 
 - Sushil K Sharma https://linkedin.com/in/krishnatray 
