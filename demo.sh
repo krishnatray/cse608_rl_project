@@ -1,0 +1,1 @@
+streamlit run wordle_rl_demo.py
