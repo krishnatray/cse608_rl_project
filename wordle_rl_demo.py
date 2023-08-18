@@ -8,8 +8,25 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import csv
 import random
+
 dictionary = []
 record = []
+
+hide_st_style = """  <style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;} 
+</style>
+"""
+
+st.markdown(hide_st_style, unsafe_allow_html=True)
+
+
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown('<style>{}</style>'.format(f.read()), unsafe_allow_html=True)
+
+local_css("wordle.css")
 
 with open('5_letters.csv', 'r') as file:
     reader = csv.reader(file)
@@ -34,6 +51,37 @@ def wordle_feedback(target_word, guess_word):
             black.append((i, g))
 
     return {"green": green, "yellow": yellow, "black": black}
+
+def colored_text(target_word, guess_word):
+
+    list_target = list(target_word.upper())
+    list_guess = list(guess_word.upper())
+    green_template = """<span class='highlight green'>
+                        <span class='bold'>__letter__
+                        </span> 
+                        </span> """
+    
+    yellow_template = """<span class='highlight2 yellow'>
+                        <span class='bold'>__letter__
+                        </span> 
+                        </span> """
+   
+    black_template = """<span class='highlight2 black'>
+                        <span class='bold'>__letter__
+                        </span> 
+                        </span> """
+    colored_str = ""
+    for ltr_guess, ltr_target in zip(list_guess, list_target):
+        if ltr_guess == ltr_target:
+            colored_str = colored_str + green_template.replace("__letter__",ltr_guess)
+            # print(colored_str)
+        elif ltr_guess in list_target:
+            colored_str = colored_str + yellow_template.replace("__letter__",ltr_guess)
+        else:
+            colored_str = colored_str + black_template.replace("__letter__",ltr_guess)
+            
+    colored_str = "<div>" + colored_str + "</div>"
+    return colored_str
 
 def nextguess(d):
     #find a key with a maximum value.  Choose randomly if there is a tie
@@ -99,8 +147,10 @@ def play_wordle(word, display_output=False):
     """
     guess = "cares"
     if display_output:
-        st.markdown(f"# Target Word => {format_word(word)}")
-        st.markdown(f"### Guess {1} => {format_word(guess)}")
+
+        st.markdown(f"# Target: {format_word(word)}")
+        colored_guess = colored_text(word, guess)
+        st.markdown(colored_guess, unsafe_allow_html=True)
 
     feedback = wordle_feedback(word, guess)
     
@@ -117,7 +167,9 @@ def play_wordle(word, display_output=False):
         remaining_dict.remove(guess)
         
         if display_output:
-            st.markdown(f"### Guess {i} =>{format_word(guess)}")
+            colored_guess = colored_text(word, guess)
+            st.write(" ")
+            st.markdown(colored_guess, unsafe_allow_html=True)
         feedback = wordle_feedback(word, guess)
         # st.write("Feedback = ", feedback)
         if len(feedback['green']) == 5:
@@ -134,33 +186,46 @@ def play_wordle(word, display_output=False):
     return i
 
 
-st.title("WORDLE Reinforcement Learning Demo!")
+st.title("Wordle Reinforcement Learning Demo!")
 tab1, tab2 = st.tabs(["Single Game", "Multigame Simulation"])
 
 with tab1:
     st.header("Single Play Simulation")
+
+    t = """<div>
+              <span class='highlight green'> Green
+              <span class='bold'>Green Bold</span> 
+              </span> 
+            </div>"""
+    # st.markdown(t, unsafe_allow_html=True)
+
     play_button = st.button("Play Game")
 
     if play_button:
         word = random.choice(dictionary)
         result = play_wordle(word, True)
         st.markdown(f"# Total Tries [{result}]")
+        st.balloons()
 
 with tab2:
     st.header("Mutiple Games Simulation")
     num_games = st.number_input("Number of Games [1-2500]", value = 20, min_value = 1, max_value=2500)
     play_num_button = st.button("Run Simulation")
-
+    
     if play_num_button:
         results = []
+        progress_bar = st.progress(0, "Running simulation..")
+        i = 0 
         for game in range(num_games):
+            progress_bar.progress((i+1)/num_games, text= "Running simulation..")
             word = random.choice(dictionary)
             result = play_wordle(word, False)
             results.append(result) 
+            i += 1
 
         arr_results = np.array(results)
         avg_tries = np.mean(arr_results)
-        st.markdown(f"Mean {result}")        
+        st.markdown(f"Mean {avg_tries: 0.2f}")        
         fig, ax = plt.subplots()
         ax.hist(arr_results)
         st.pyplot(fig)
