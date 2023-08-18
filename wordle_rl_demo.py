@@ -6,12 +6,14 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import csv
 import random
 import time
 
 dictionary = []
 record = []
+plt.style.use('dark_background')
 
 hide_st_style = """  <style>
 #MainMenu {visibility: hidden;}
@@ -216,7 +218,7 @@ tab1, tab2, tab3 = st.tabs(["Single Game", "Multigame Simulation", "Manual Play"
 
 with tab1:
     st.header("Single Play Simulation")
-    play_button = st.button("Play Game", key="1")
+    play_button = st.button("Run AI Bot", key="1")
 
     if play_button:
         word = random.choice(dictionary)
@@ -242,17 +244,26 @@ with tab2:
 
         arr_results = np.array(results)
         avg_tries = np.mean(arr_results)
-        st.markdown(f"Mean {avg_tries: 0.2f}")        
-        fig, ax = plt.subplots()
-        ax.hist(arr_results)
+        med_tries = np.median(arr_results)
+        sd_tries = np.std(arr_results)
+        
+        st.markdown(f"Mean {avg_tries: 0.2f} | Median:{med_tries: 0.2f} | SD: {sd_tries: 0.2f}")        
+        fig, (ax1, ax2) = plt.subplots(1,2)
+        # ax[0].set_title("Histogram")
+        # ax1.hist(arr_results, density=True)
+        sns.histplot( ax = ax1, data = arr_results, kde=True )
+        # sns.kdeplot( ax =ax1, data = arr_results )
+        # ax2.boxplot(arr_results, vert=False)
+        sns.boxplot(ax = ax2, data = arr_results )
+        # ax2.boxplot(arr_results)
         st.pyplot(fig)
-
+       
 with tab3:
     st.header("Manual Play Simulation")
 
     word = st.text_input("Please enter a 5 letter word:",max_chars=5)
 
-    play_button_manual = st.button("Play Game", key="3")
+    play_button_manual = st.button("Run AI Bot", key="3")
 
     if play_button_manual:
         if len(word) == 5:
