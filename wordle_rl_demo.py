@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import csv
 import random
+import time
 
 dictionary = []
 record = []
@@ -15,11 +16,33 @@ record = []
 hide_st_style = """  <style>
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-header {visibility: hidden;} 
+#header {visibility: hidden;} 
 </style>
 """
-
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+with st.sidebar:
+    
+    credits_text = """
+
+## CSE608 AI wih Reinforcement Learning July 2023
+- Project: Wordle Reinforcement Learning
+---------------------
+
+## Project Team:
+- Alok Gupta https://linkedin.com/in/alok-gupta-innovator 
+- Sushil K Sharma https://linkedin.com/in/krishnatray 
+- Fang Wang https://www.linkedin.com/in/fangwang12/ 
+- Joyce Cheng https://www.linkedin.com/in/joyce-cheng-2872a688/ 
+---------------------
+## Professor:
+Yongchang Feng (yongchang_feng@yahoo.com)
+
+California Science and Technology University
+https://www.cstu.edu/
+              
+"""
+    st.markdown(credits_text) 
 
 
 def local_css(file_name):
@@ -168,6 +191,7 @@ def play_wordle(word, display_output=False):
         
         if display_output:
             colored_guess = colored_text(word, guess)
+            time.sleep(0.5)
             st.write(" ")
             st.markdown(colored_guess, unsafe_allow_html=True)
         feedback = wordle_feedback(word, guess)
@@ -186,20 +210,13 @@ def play_wordle(word, display_output=False):
     return i
 
 
-st.title("Wordle Reinforcement Learning Demo!")
-tab1, tab2 = st.tabs(["Single Game", "Multigame Simulation"])
+st.title("Wordle! - Reinforcement Learning Demo!")
+
+tab1, tab2, tab3 = st.tabs(["Single Game", "Multigame Simulation", "Manual Play"])
 
 with tab1:
     st.header("Single Play Simulation")
-
-    t = """<div>
-              <span class='highlight green'> Green
-              <span class='bold'>Green Bold</span> 
-              </span> 
-            </div>"""
-    # st.markdown(t, unsafe_allow_html=True)
-
-    play_button = st.button("Play Game")
+    play_button = st.button("Play Game", key="1")
 
     if play_button:
         word = random.choice(dictionary)
@@ -210,7 +227,7 @@ with tab1:
 with tab2:
     st.header("Mutiple Games Simulation")
     num_games = st.number_input("Number of Games [1-2500]", value = 20, min_value = 1, max_value=2500)
-    play_num_button = st.button("Run Simulation")
+    play_num_button = st.button("Run Simulation", key="2")
     
     if play_num_button:
         results = []
@@ -229,6 +246,24 @@ with tab2:
         fig, ax = plt.subplots()
         ax.hist(arr_results)
         st.pyplot(fig)
+
+with tab3:
+    st.header("Manual Play Simulation")
+
+    word = st.text_input("Please enter a 5 letter word:",max_chars=5)
+
+    play_button_manual = st.button("Play Game", key="3")
+
+    if play_button_manual:
+        if len(word) == 5:
+            if word not in dictionary:
+                dictionary.append(word)
+
+            result = play_wordle(word, True)
+            st.markdown(f"# Total Tries [{result}]")
+            st.balloons()
+        else:
+            st.error("Please enter a word of length 5")
 
 
 
