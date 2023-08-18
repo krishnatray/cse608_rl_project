@@ -1,5 +1,7 @@
 #
-# Wordle.py
+# Wordle_rl_demo.py
+# Sushil Sharma, Alok Gupta, Fang Wang, Joyce Cheng
+# CSE608 AI with Reinforcement Learning
 #
 
 import streamlit as st
@@ -22,6 +24,17 @@ footer {visibility: hidden;}
 </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 1rem;
+                    padding-bottom: 0rem;
+                    padding-left: 5rem;
+                    padding-right: 5rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
 
 with st.sidebar:
     
@@ -260,21 +273,39 @@ with tab2:
        
 with tab3:
     st.header("Manual Play Simulation")
+    
+    with st.container():
+        show_button = st.button("Show Me words", key="3")
 
-    word = st.text_input("Please enter a 5 letter word:",max_chars=5)
+        if show_button:
+                random_words_list = [random.choice(dictionary).upper() for i in range(8)]
+                random_words_txt = " | ".join(random_words_list)
+                mark_down_txt = """
+                <div>
+                <span class='highlight red'>
+                <span class='bold'> __txt1__
+                </span> 
+                </span>
+                </div>"""
+                mark_down_txt = mark_down_txt.replace("__txt1__",random_words_txt )         
+                st.markdown(mark_down_txt, unsafe_allow_html=True)
 
-    play_button_manual = st.button("Run AI Bot", key="3")
+    with st.container():
+        word = st.text_input("Please enter a 5 letter word:",max_chars=5)
 
-    if play_button_manual:
-        if len(word) == 5:
-            if word not in dictionary:
-                dictionary.append(word)
+        play_button_manual = st.button("Run AI Bot", key="4")
+        
+        
+        if play_button_manual:
+            if len(word) == 5:
+                if word not in dictionary:
+                    dictionary.append(word)
 
-            result = play_wordle(word, True)
-            st.markdown(f"# Total Tries [{result}]")
-            st.balloons()
-        else:
-            st.error("Please enter a word of length 5")
+                result = play_wordle(word, True)
+                st.markdown(f"# Total Tries [{result}]")
+                st.balloons()
+            else:
+                st.error("Please enter a word of length 5")
 
 
 
