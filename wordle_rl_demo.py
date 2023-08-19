@@ -226,7 +226,7 @@ def play_wordle(word, display_output=False):
 
 st.title("Wordle! - Reinforcement Learning Demo!")
 
-tab1, tab2, tab3 = st.tabs(["Single Game", "Multigame Simulation", "Manual Play"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Single Game", "Multigame Simulation", "Manual Play", "Data", "Code Blocks"])
 
 with tab1:
     st.header("Single Play Simulation")
@@ -306,6 +306,137 @@ with tab3:
             else:
                 st.error("Please enter a word of length 5")
 
+with tab4:
+    st.header("Data")
+    df = pd.read_csv("5_letters.csv")
+    st.write(f"Dictionay Size: {len(df)}")
+    df['word'] = df['1']+df['2']+df['3']+df['4']+df['5']
+    st.write(df)    
+    fig, ax = plt.subplots()
+    ax.set_title("Histogram of Starting letters in Dictionary")
+    sns.histplot( ax = ax, data = df['1'], kde=True )
+    st.pyplot(fig)
 
+with tab5:
+    st.header("Code")
+    
+    function_is_consistent = """def is_consistent(word, feedback):
+    # Create list from word and a copy for yellow check
+    word_list = list(word)
+    remaining_letters = word_list.copy()
 
+    # 'green' checks: correct letter must be at the correct index
+    for index, letter in feedback['green']:
+        if word_list[index] != letter:
+            return False
+        remaining_letters.remove(letter)  # Mark as used
 
+    # 'yellow' checks: correct letter can't be at the same index, but must exist elsewhere
+    for index, letter in feedback['yellow']:
+        if word_list[index] == letter or letter not in remaining_letters:
+            return False
+        remaining_letters.remove(letter)  # Mark as used
+
+    # 'black' checks: letter must not be in the word at all
+    for index, letter in feedback['black']:
+        if letter in remaining_letters:
+            return False
+
+    return True
+
+    """
+
+    function_next_guess = """ def nextguess(d):
+    #find a key with a maximum value.  Choose randomly if there is a tie
+    
+    import random
+    
+    max_val = max(d.values())
+    keys_with_max_val = [key for key, value in d.items() if value == max_val]
+    return random.choice(keys_with_max_val)"""
+
+    function_create_q_table = """def create_Qtable(dictionary):
+    
+    dict1 = {key: 0 for key in dictionary} #create dictionary
+    
+    for key1 in dict1: #step through potential target words
+        for key2 in dict1: #step through each word in dictrionary
+            
+            feedback = wordle_feedback(key1, key2) #feedback for traget key1 compared with guess key2
+            
+            for key3 in dict1: #computing reduction in length of dictionary by chosing key1 for each key2
+                
+                inconsistent = 0 #reset counter 
+                
+                if not is_consistent(key3, feedback):
+                    inconsistent += 1 #counting how many words are eliminated from dicationary 
+                    
+                dict1[key2] = dict1[key2] + inconsistent #updates key2 for reduction in length of dictionary
+                #Updating Qtable
+        
+    return(dict1)"""
+    
+    
+    function_wordle_feedback = """def wordle_feedback(target_word, guess_word):
+    green = [(i, g) for i, (t, g) in enumerate(zip(target_word, guess_word)) if t == g]
+    remaining = [(i, t, g) for i, (t, g) in enumerate(zip(target_word, guess_word)) if t != g]
+    
+    remaining_target = [t for i, t, g in remaining]
+    yellow = []
+    black = []
+
+    for i, t, g in remaining:
+        if g in remaining_target:
+            yellow.append((i, g))
+            remaining_target.remove(g)  # Remove the letter from the target list so it can't be used again
+        else:
+            black.append((i, g))
+
+    return {"green": green, "yellow": yellow, "black": black}
+ """
+    function_play_wordle = """def play_wordle(word, display_output=False):
+    guess = "cares"
+    if display_output:
+
+        st.markdown(f"# Target: {format_word(word)}")
+        colored_guess = colored_text(word, guess)
+        st.markdown(colored_guess, unsafe_allow_html=True)
+
+    feedback = wordle_feedback(word, guess)
+    
+    remaining_dict = []
+    
+    for wordtest in dictionary:
+        if is_consistent(wordtest, feedback):
+            remaining_dict.append(wordtest)
+            
+   
+    for i in range(2,55):
+        Qtable = create_Qtable(remaining_dict)
+        guess = nextguess(Qtable)
+        remaining_dict.remove(guess)
+        
+        if display_output:
+            colored_guess = colored_text(word, guess)
+            time.sleep(0.5)
+            st.write(" ")
+            st.markdown(colored_guess, unsafe_allow_html=True)
+        feedback = wordle_feedback(word, guess)
+        # st.write("Feedback = ", feedback)
+        if len(feedback['green']) == 5:
+            record.append(i)
+            break
+            
+        temp = []
+            
+        for wordtest in remaining_dict:    
+            if is_consistent(wordtest, feedback):
+                temp.append(wordtest)
+                
+        remaining_dict = temp 
+    return i"""
+    st.code(function_create_q_table)
+    st.code(function_next_guess)
+    st.code(function_is_consistent)
+    st.code(function_wordle_feedback)
+    st.code(function_play_wordle)
