@@ -156,24 +156,24 @@ def is_consistent(word, feedback):
 
 def create_Qtable(dictionary):
     
-    dict = {key: 0 for key in dictionary} #create dictionary
+    dict1 = {key: 0 for key in dictionary} #create dictionary
     
-    for key1 in dict: #step through potential target words
-        for key2 in dict: #step through each word in dictrionary
+    for key1 in dict1: #step through potential target words
+        for key2 in dict1: #step through each word in dictrionary
             
             feedback = wordle_feedback(key1, key2) #feedback for traget key1 compared with guess key2
             
-            for key3 in dict: #computing reduction in length of dictionary by chosing key1 for each key2
+            for key3 in dict1: #computing reduction in length of dictionary by chosing key1 for each key2
                 
                 inconsistent = 0 #reset counter 
                 
                 if not is_consistent(key3, feedback):
                     inconsistent += 1 #counting how many words are eliminated from dicationary 
                     
-                dict[key2] = dict[key2] + inconsistent #updates key2 for reduction in length of dictionary
+                dict1[key2] = dict1[key2] + inconsistent #updates key2 for reduction in length of dictionary
                 #Updating Qtable
         
-    return(dict)
+    return(dict1)
 
 def format_word(guess):
     return " ".join(list(guess.upper())) 
