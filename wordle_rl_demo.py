@@ -108,14 +108,30 @@ def colored_text(target_word, guess_word):
                         </span> 
                         </span> """
     colored_str = ""
-    for ltr_guess, ltr_target in zip(list_guess, list_target):
-        if ltr_guess == ltr_target:
+
+    color_feeback =  wordle_feedback(target_word, guess_word)
+
+    color_map = ['', '', '', '', '']
+    for clr in color_feeback.keys():
+        for item in color_feeback[clr]:
+            color_map[item[0]]= clr
+
+    for ltr_guess, color in zip(guess_word.upper(), color_map):
+        if color == 'green':
             colored_str = colored_str + green_template.replace("__letter__",ltr_guess)
-            # print(colored_str)
-        elif ltr_guess in list_target:
-            colored_str = colored_str + yellow_template.replace("__letter__",ltr_guess)
+        elif color == 'yellow':
+             colored_str = colored_str + yellow_template.replace("__letter__",ltr_guess)
         else:
-            colored_str = colored_str + black_template.replace("__letter__",ltr_guess)
+             colored_str = colored_str + black_template.replace("__letter__",ltr_guess)        
+
+    # for ltr_guess, ltr_target in zip(list_guess, list_target):
+    #     if ltr_guess == ltr_target:
+    #         colored_str = colored_str + green_template.replace("__letter__",ltr_guess)
+    #         # print(colored_str)
+    #     elif ltr_guess in list_target:
+    #         colored_str = colored_str + yellow_template.replace("__letter__",ltr_guess)
+    #     else:
+    #         colored_str = colored_str + black_template.replace("__letter__",ltr_guess)
             
     colored_str = "<div>" + colored_str + "</div>"
     return colored_str
