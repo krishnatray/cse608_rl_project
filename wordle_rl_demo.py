@@ -109,7 +109,7 @@ def colored_text(target_word, guess_word):
                         </span> """
     colored_str = ""
 
-    color_feeback =  wordle_feedback(target_word, guess_word)
+    color_feeback =  wordle_feedback(target_word.upper(), guess_word.upper())
 
     color_map = ['', '', '', '', '']
     for clr in color_feeback.keys():
